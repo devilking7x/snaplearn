@@ -15,12 +15,13 @@ app.get('/api/health', (_req, res) => {
   res.json({ ok: true, backend: MOCK ? 'mock' : 'real', service: 'snaplearn' });
 });
 
-// POST /api/analyze — multipart form: image file, lang (en|hi)
+// POST /api/analyze — multipart form: image file, lang (en|hi), difficulty (eli5|class|advanced)
 app.post('/api/analyze', upload.single('image'), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: 'No image uploaded' });
     const lang = req.body.lang === 'hi' ? 'hi' : 'en';
-    const result = await analyzeImage(req.file.buffer, req.file.originalname, lang);
+    const difficulty = ['eli5', 'class', 'advanced'].includes(req.body.difficulty) ? req.body.difficulty : 'class';
+    const result = await analyzeImage(req.file.buffer, req.file.originalname, lang, difficulty);
     res.json({ ...result, demo: MOCK });
   } catch (e: any) {
     res.status(500).json({ error: e.message || 'Analysis failed' });

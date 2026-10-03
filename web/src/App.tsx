@@ -44,7 +44,7 @@ export default function App() {
     setLoading(true);
     setPreview(URL.createObjectURL(f));
     const fd = new FormData();
-    fd.append('image', f); fd.append('lang', lang);
+    fd.append('image', f); fd.append('lang', lang); fd.append('difficulty', difficulty);
     try {
       const r = await fetch(`${API}/api/analyze`, { method: 'POST', body: fd });
       const data = await r.json();

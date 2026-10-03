@@ -26,20 +26,38 @@ export interface Flashcard {
 }
 
 // Realistic mock analysis — used when no API key (demo mode)
-export function mockAnalyze(imageName: string, lang: string): AnalysisResult {
+// HONEST: clearly frames content as a sample walkthrough, not a real analysis
+export function mockAnalyze(imageName: string, lang: string, difficulty: string): AnalysisResult {
   const isHindi = lang === 'hi';
-  return {
-    topic: 'Photosynthesis — Light Reactions',
-    subject: 'Biology (Class 10)',
-    explanation: {
-      en: 'This diagram shows the light-dependent reactions of photosynthesis taking place in the thylakoid membranes of chloroplasts. Light energy splits water molecules (photolysis), releasing oxygen as a byproduct. The energized electrons travel through an electron transport chain, pumping protons to create a gradient that powers ATP synthase — producing ATP and NADPH for the Calvin cycle.',
-      hi: 'Ye diagram prakash-sanshleshan ki light reactions dikhata hai jo harit-lavak (chloroplast) ki thylakoid jhilli me hoti hain. Prakash urja paani ke anuon ko todti hai (photolysis), jisse oxygen nikalti hai. Urjavan electron, electron transport chain se guzarte hain aur proton gradient banate hain jo ATP synthase ko chalakar ATP aur NADPH banata hai.'
+  const diffNote = isHindi
+    ? '\n\n⚠️ Demo mode: ye ek sample analysis hai. Asli vision AI key lagne par kisi bhi image ka sahi analysis milega.'
+    : '\n\n⚠️ Demo mode: this is a sample walkthrough. Connect a vision API key for real analysis of any image.';
+
+  const explanations = {
+    eli5: {
+      en: 'Think of a leaf like a tiny kitchen! It takes sunlight (like the stove heat), water (like ingredients), and air, then cooks up food (sugar) for the plant. The green stuff called chlorophyll is like the chef. Leftover oxygen goes out for us to breathe!' + diffNote,
+      hi: 'Pattiyon ko chhoti rasoi samjho! Ye suraj ki roshni (jaise chulhe ki aanch), paani aur hawa lekar paudhe ke liye khana (sugar) banati hain. Hara chlorophyll rasoiya hai. Bachi hui oxygen hum saans lene ke liye chhod deti hai!' + diffNote
     },
+    class: {
+      en: 'This diagram shows the light-dependent reactions of photosynthesis taking place in the thylakoid membranes of chloroplasts. Light energy splits water molecules (photolysis), releasing oxygen as a byproduct. The energized electrons travel through an electron transport chain, pumping protons to create a gradient that powers ATP synthase — producing ATP and NADPH for the Calvin cycle.' + diffNote,
+      hi: 'Ye diagram prakash-sanshleshan ki light reactions dikhata hai jo harit-lavak (chloroplast) ki thylakoid jhilli me hoti hain. Prakash urja paani ke anuon ko todti hai (photolysis), jisse oxygen nikalti hai. Urjavan electron, electron transport chain se guzarte hain aur proton gradient banate hain jo ATP synthase ko chalakar ATP aur NADPH banata hai.' + diffNote
+    },
+    advanced: {
+      en: 'Light-dependent reactions occur across the thylakoid membrane via two photosystems (PSII: P680, PSI: P700) connected by the cytochrome b6f complex. Photolysis at the oxygen-evolving complex (Mn4CaO5 cluster) yields 4e⁻ per 2H2O. Linear electron flow generates a ΔpH ≈ 3 units driving ATP synthase (CF0CF1, ~14 c-subunits); cyclic flow around PSI supplements the ATP:NADPH ratio toward the 3:2 stoichiometry demanded by the Calvin-Benson-Bassham cycle. Quantum requirement: 8–10 photons per O2 evolved.' + diffNote,
+      hi: 'Light reactions thylakoid jhilli me do photosystems (PSII: P680, PSI: P700) ke zariye hoti hain jo cytochrome b6f complex se jude hain. Oxygen-evolving complex (Mn4CaO5 cluster) par photolysis se 4e⁻ milte hain. Linear electron flow ΔpH ≈ 3 banata hai jo ATP synthase chalata hai; PSI ke around cyclic flow ATP:NADPH ratio ko Calvin cycle ki 3:2 demand ke hisaab se badhata hai.' + diffNote
+    }
+  };
+  const exp = explanations[difficulty as keyof typeof explanations] || explanations.class;
+
+  return {
+    topic: 'Photosynthesis — Light Reactions (Sample)',
+    subject: 'Biology (Class 10)',
+    explanation: { en: exp.en, hi: exp.hi },
     keyPoints: isHindi
       ? ['Photolysis: paani tootkar O2, H+ aur electron deta hai', 'Electron transport chain se ATP banta hai', 'NADPH Calvin cycle ke liye zaroori hai', 'Ye prakriya thylakoid jhilli me hoti hai']
       : ['Photolysis splits water into O2, H+ and electrons', 'Electron transport chain drives ATP synthesis', 'NADPH is produced for the Calvin cycle', 'Occurs in thylakoid membranes'],
     diagramLabels: ['Chloroplast', 'Thylakoid membrane', 'Photosystem II', 'Electron transport chain', 'ATP synthase', 'O2 released'],
-    difficulty: 'medium',
+    difficulty: difficulty === 'eli5' ? 'easy' : difficulty === 'advanced' ? 'hard' : 'medium',
     backend: 'mock'
   };
 }
@@ -84,8 +102,8 @@ export function mockFlashcards(lang: string): Flashcard[] {
   ];
 }
 
-export async function analyzeImage(imageBuffer: Buffer, fileName: string, lang: string): Promise<AnalysisResult> {
-  if (MOCK) return mockAnalyze(fileName, lang);
+export async function analyzeImage(imageBuffer: Buffer, fileName: string, lang: string, difficulty = 'class'): Promise<AnalysisResult> {
+  if (MOCK) return mockAnalyze(fileName, lang, difficulty);
   // Real vision API path (OpenAI-compatible, e.g. Nebius)
   const apiKey = process.env.VISION_API_KEY;
   const baseUrl = process.env.VISION_API_BASE || 'https://api.studio.nebius.ai/v1';
