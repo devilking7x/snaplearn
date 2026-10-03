@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body { @apply bg-ink text-white; }
+.card { @apply bg-grape/60 border border-plum/20 rounded-2xl p-6 backdrop-blur; }
+.btn-primary { @apply bg-gradient-to-r from-plum to-blush text-white font-semibold px-6 py-3 rounded-xl hover:opacity-90 transition disabled:opacity-50; }
+.btn-ghost { @apply border border-plum/40 text-white/80 px-6 py-3 rounded-xl hover:bg-plum/10 transition; }
+.chip { @apply text-xs px-3 py-1 rounded-full bg-plum/20 text-purple-200 border border-plum/30; }
