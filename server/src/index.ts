@@ -1,7 +1,11 @@
 import cors from 'cors';
 import express from 'express';
 import multer from 'multer';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { analyzeImage, generateFlashcards, generateQuiz } from './ai.js';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const app = express();
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 8 * 1024 * 1024 } });
@@ -71,4 +75,12 @@ app.post('/api/ask', async (req, res) => {
 });
 
 const PORT = Number(process.env.PORT || 3001);
+
+// Serve frontend static files in production (web/dist)
+const distDir = path.resolve(__dirname, '../../web/dist');
+app.use(express.static(distDir));
+app.get('*', (_req, res) => {
+  res.sendFile(path.join(distDir, 'index.html'));
+});
+
 app.listen(PORT, () => console.log(`SnapLearn server on :${PORT} (mock=${MOCK})`));

@@ -5,17 +5,12 @@ services:
     repo: https://github.com/devilking7x/snaplearn
     branch: main
     plan: free
+    region: singapore
     buildCommand: npm run install:all && npm run build --prefix web
     startCommand: npm start --prefix server
+    healthCheckPath: /api/health
     envVars:
       - key: NODE_VERSION
         value: 20
       - key: VISION_MOCK
         value: 1
-      - key: PORT
-        value: 10000
-    staticPublishPath: web/dist
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html

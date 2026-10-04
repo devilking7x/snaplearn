@@ -25,10 +25,10 @@ Upload a photo of any textbook diagram or page. SnapLearn's multimodal AI:
 
 ```bash
 npm run install:all
-# Terminal 1: backend
+npm run build          # builds server (tsc) + web (vite)
+# Single server serves both API + frontend:
 cd server && PORT=3001 npm start
-# Terminal 2: frontend
-cd web && VITE_API_URL=http://localhost:3001 npm run dev
+# → open http://localhost:3001
 ```
 
 ## 🔑 Real AI mode

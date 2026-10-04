@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 
-const API = (import.meta.env.VITE_API_URL as string) || 'http://localhost:3001';
+const API = (import.meta.env.VITE_API_URL as string) || '';  // same-origin in production
 
 interface Analysis {
   topic: string; subject: string;
